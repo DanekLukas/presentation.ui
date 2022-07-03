@@ -8,33 +8,23 @@ import { useDispatch } from 'react-redux'
 import React, { useContext, useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 
-type JobRow = {
-  id: number
+type EducationRow = {
   title: string
   description: string
-  position: string
-  skills: string
-  platform: string
+  degree: string
   started: string
   finished: string
 }
 
-type Props = {
-  name?: string
-}
-
 const query = {
-  getJobs: gql`
-    query Jobs($login: String, $language: String, $orderBy: String) {
-      allJobsRanges(login: $login, language: $language, orderBy: $orderBy) {
+  getEducations: gql`
+    query Educations($login: String, $language: String, $orderBy: String) {
+      allEducationsRanges(login: $login, language: $language, orderBy: $orderBy) {
         error
         data {
-          id
           title
           description
-          position
-          skills
-          platform
+          degree
           started
           finished
         }
@@ -44,27 +34,31 @@ const query = {
   `,
 }
 
-const Job = ({ name }: Props) => {
+type Props = {
+  name: string
+}
+
+const Education = ({ name }: Props) => {
   const dispatch = useDispatch()
   const { addItem, removeItem } = useContext(MenuContext)
   const { getExpression, getLanguage } = useContext(LanguageContext)
-  const [data, setdata] = useState<Array<JobRow>>([])
+  const [data, setdata] = useState<Array<EducationRow>>([])
   const { Paragraph, Title } = Typography
-  const menuItem = { link: 'job', name: 'header.professional.experience' }
+  const menuItem = { link: 'education', name: 'header.education' }
 
-  const { refetch: refetchJobsData } = useQuery(query.getJobs, {
+  const { refetch: refetchEducationData } = useQuery(query.getEducations, {
     skip: true,
-    onCompleted: allJobsData => {
-      if (allJobsData.allJobsRanges.error) {
+    onCompleted: allEducationsData => {
+      if (allEducationsData.allEducationsRanges.error) {
         removeItem(menuItem)
-        dispatch(setMessage(allJobsData.allJobsRanges.message))
+        dispatch(setMessage(allEducationsData.allEducationsRanges.message))
         return
       }
-      const datas: Array<JobRow> = []
-      Object.keys(allJobsData.allJobsRanges.data).forEach(key =>
+      const datas: Array<EducationRow> = []
+      Object.keys(allEducationsData.allEducationsRanges.data).forEach((key, index) =>
         datas.push({
-          ...allJobsData.allJobsRanges.data[key],
-          ...{ action: '', key: `jobs_${allJobsData.allJobsRanges.data[key].id}` },
+          ...allEducationsData.allEducationsRanges.data[key],
+          ...{ action: '', key: index },
         })
       )
       if (datas.length === 0) removeItem(menuItem)
@@ -74,14 +68,14 @@ const Job = ({ name }: Props) => {
   })
 
   useEffect(() => {
-    refetchJobsData({ login: name, language: getLanguage(), orderBy: 'started' })
-  }, [refetchJobsData, getLanguage, name])
+    refetchEducationData({ login: name, language: getLanguage(), orderBy: 'id' })
+  }, [refetchEducationData, getLanguage, name])
 
   return (
     <>
       {data.length > 0 && (
         <Title level={4} className='section' id={menuItem.link}>
-          {getExpression('header.professional.experience')}
+          {getExpression('header.education')}
         </Title>
       )}
       {data.map((item, index) => (
@@ -91,18 +85,13 @@ const Job = ({ name }: Props) => {
               {item.started} - {item.finished}
             </span>
             <span style={{ paddingLeft: '8rem' }}>{item.title}</span>
+            <span style={{ display: 'block', float: 'right' }}>{item.degree}</span>
           </Title>
-          <ReactMarkdown>
-            {`>${item['description' as keyof typeof item]}  
-            
-            \n${['position', 'skills', 'platform']
-              .map(key => `${getExpression(key)}: **${item[key as keyof typeof item]}**`)
-              .join('  \n ')}`}
-          </ReactMarkdown>
+          <ReactMarkdown>{item.description}</ReactMarkdown>
         </Paragraph>
       ))}
     </>
   )
 }
 
-export default Job
+export default Education

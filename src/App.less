@@ -1,5 +1,9 @@
 @import '~antd/dist/antd.less';
 
+html {
+  scroll-behavior: smooth;
+}
+
 @btn-bkg: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
 @use-margin: 14px;
 
@@ -40,4 +44,19 @@
 
 .use-margin-bottom {
   margin-bottom: @use-margin;
+}
+  
+.section {
+  background-color: lightgrey;
+  border:1px solid rgba(0, 0, 0, 0.2);
+  text-align: center;
+  font-weight: 400!important;
+}
+
+a.menu {
+  display: block;
+}
+
+div.menu {
+  margin: 1rem 0;
 }

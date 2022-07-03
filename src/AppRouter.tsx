@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Header from './Pages/Header'
 import Homepage from './Pages/Homepage'
 import React from 'react'
@@ -17,7 +17,17 @@ const AppRouter = () => {
               </>
             }
           />
-          <Route path='*' element={<Navigate to='/' />} />
+          <Route
+            path='*'
+            element={
+              <>
+                <Header />
+                <Homepage
+                  name={window.document.location.pathname.substring(1).split('/')[0].split('#')[0]}
+                />
+              </>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>

@@ -1,4 +1,6 @@
 import { LanguageContext } from '../contexts/LanguageContext'
+import { MenuContext } from '../contexts/MenuContext'
+
 import { Typography } from 'antd'
 import { gql, useQuery } from '@apollo/client'
 import { setMessage } from '../components/Message/messageActionCreators'
@@ -10,8 +12,8 @@ type ArticleRow = { id: number; title: string; content: string; links: string }
 
 const query = {
   getArticles: gql`
-    query Articles($language: String, $orderBy: String) {
-      allArticles(language: $language, orderBy: $orderBy) {
+    query Articles($login: String, $language: String, $orderBy: String) {
+      allArticles(login: $login, language: $language, orderBy: $orderBy) {
         error
         data {
           id
@@ -25,44 +27,57 @@ const query = {
   `,
 }
 
-const Article = () => {
+type Props = {
+  name: string
+}
+
+const Article = ({ name }: Props) => {
   const dispatch = useDispatch()
+  const { addItem, removeItem } = useContext(MenuContext)
   const { getExpression, getLanguage } = useContext(LanguageContext)
-  const [keptData, setKeptData] = useState<Array<ArticleRow>>([])
+  const [data, setdata] = useState<Array<ArticleRow>>([])
   const { Link, Paragraph, Title } = Typography
+  const menuItem = { link: 'article', name: 'header.projects' }
 
   const { refetch: refetchArticleData } = useQuery(query.getArticles, {
     skip: true,
     onCompleted: allArticlesData => {
       if (allArticlesData.allArticles.error) {
+        removeItem(menuItem)
         dispatch(setMessage(allArticlesData.allArticles.message))
         return
       }
       const datas: Array<ArticleRow> = []
-      Object.keys(allArticlesData.allArticles.data).forEach(key =>
+      Object.keys(allArticlesData.allArticles.data).forEach((key, index) =>
         datas.push({
           ...allArticlesData.allArticles.data[key],
-          ...{ action: '', key: `articles_${allArticlesData.allArticles.data[key].id}` },
+          ...{ action: '', key: index },
         })
       )
-      setKeptData(datas)
+      if (datas.length === 0) removeItem(menuItem)
+      else addItem(menuItem)
+      setdata(datas)
     },
   })
 
   useEffect(() => {
-    refetchArticleData({ language: getLanguage(), orderBy: 'id' })
-  }, [refetchArticleData, getLanguage])
+    refetchArticleData({ login: name, language: getLanguage(), orderBy: 'id' })
+  }, [refetchArticleData, getLanguage, name])
 
   return (
     <>
-      {keptData.map((item, index) => (
+      {data.length > 0 && (
+        <Title level={4} className='section' id={menuItem.link}>
+          {getExpression('header.projects')}
+        </Title>
+      )}
+      {data.map((item, index) => (
         <Paragraph key={index}>
           <Title level={4}>{item.title}</Title>
           <ReactMarkdown>{item.content}</ReactMarkdown>
           <Link>{item.links}</Link>
         </Paragraph>
       ))}
-      {!keptData.length && <Title>{getExpression('noArticle')}</Title>}
     </>
   )
 }

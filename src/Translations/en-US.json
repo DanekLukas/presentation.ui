@@ -1,5 +1,5 @@
 {
-  "danekFamily": "Daněk family",
+  "pageTitle": "Presentations",
   "submit": "submit",
   "login": "login",
   "registration": "registration",
@@ -21,6 +21,10 @@
   "header.article": "Article",
   "header.articles": "Articles",
   "header.registration": "Registration",
+  "header.patents": "Patents",
+  "header.education": "Education",
+  "header.professional.experience": "Professional Experience",
+  "header.projects": "Projects",
   "getRandomArticle": "Other article",
   "articles": "Articles",
   "language": "Language",
@@ -49,6 +53,6 @@
   "description": "Description",
   "position": "Position",
   "skills": "Skills",
-  "platform": "Platform",
-  "professional.experience": "Professional Experience"
+  "platform": "Platform"
 }
+ 

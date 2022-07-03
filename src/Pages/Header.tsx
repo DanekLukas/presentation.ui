@@ -12,7 +12,7 @@ const Header = () => {
 
   return (
     <>
-      <Title>{getExpression('danekFamily')}</Title>
+      <Title>{getExpression('pageTitle')}</Title>
       <Message />
       <LanguageWrapper>
         <Language />

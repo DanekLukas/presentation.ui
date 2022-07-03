@@ -1,5 +1,5 @@
 {
-  "danekFamily": "Daňkovi",
+  "pageTitle": "Presentace",
   "submit": "odeslat",
   "login": "přihlásit",
   "registration": "registrace",
@@ -21,6 +21,10 @@
   "header.article": "Moudro",
   "header.articles": "Blog",
   "header.registration": "Registrace",
+  "header.patents": "Patenty",
+  "header.education": "Vzdělání",
+  "header.professional.experience": "Zaměstnání",
+  "header.projects": "Projekty",
   "getRandomArticle": "Jiné moudro",
   "articles": "Příspěvek",
   "language": "Jazyk",
@@ -48,6 +52,5 @@
   "description": "Úvodem",
   "position": "Pozice",
   "skills": "Použité technologie",
-  "platform": "Platforma",
-  "professional.experience": "Zaměstnání"
+  "platform": "Platforma"
 }
