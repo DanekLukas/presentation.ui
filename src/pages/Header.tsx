@@ -1,4 +1,5 @@
 import { LanguageContext } from '../contexts/LanguageContext'
+import { Link } from 'react-router-dom'
 import { Typography } from 'antd'
 import Language from './Language'
 import Message from '../components/Message'
@@ -12,7 +13,9 @@ const Header = () => {
 
   return (
     <>
-      <Title>{getExpression('pageTitle')}</Title>
+      <Title>
+        <Link to={''}>{getExpression('pageTitle')}</Link>
+      </Title>
       <Message />
       <LanguageWrapper>
         <Language />
@@ -22,8 +25,8 @@ const Header = () => {
 }
 
 const LanguageWrapper = styled.div`
-  transform: translate(20rem, -4rem);
   display: inline-block;
+  float: right;
 `
 
 export default Header

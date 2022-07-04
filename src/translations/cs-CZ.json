@@ -18,8 +18,8 @@
   "links": "odkazy",
   "enterContent": "Zadej obsah!",
   "header.login": "Přihlášení",
-  "header.article": "Moudro",
-  "header.articles": "Blog",
+  "header.article": "Project",
+  "header.articles": "Projects",
   "header.registration": "Registrace",
   "header.patents": "Patenty",
   "header.education": "Vzdělání",
@@ -52,5 +52,6 @@
   "description": "Úvodem",
   "position": "Pozice",
   "skills": "Použité technologie",
-  "platform": "Platforma"
+  "platform": "Platforma",
+  "Invitation": "Vítejte v aplikaci pro vlastní presentaci.  \n[Zde](/admin.html) můžete přidat svůj životopis případně projekty, o kterých chcete dát vědět.  \nNíže jsou jména těch, kteří již sdílejí."
 }
