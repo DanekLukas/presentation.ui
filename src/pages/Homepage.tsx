@@ -4,8 +4,6 @@ import { MenuContext } from '../contexts/MenuContext'
 import { Typography } from 'antd'
 import { gql, useQuery } from '@apollo/client'
 import { menuItem } from '../contexts/MenuProvider'
-import { setMessage } from '../components/Message/messageActionCreators'
-import { useDispatch } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Article from './Article'
 import Education from './Education'
@@ -24,6 +22,7 @@ import React, {
   useState,
 } from 'react'
 import ReactMarkdown from 'react-markdown'
+import Residency from './Residency'
 
 const query = {
   getUsersLogins: gql`
@@ -57,7 +56,6 @@ type Props = {
 }
 
 const Homepage = () => {
-  const dispatch = useDispatch()
   const navigate = useNavigate()
   const { Title } = Typography
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -83,7 +81,6 @@ const Homepage = () => {
   const { refetch: refetchUserData } = useQuery(query.getUser, {
     variables: { login: name },
     onCompleted: data => {
-      console.info(data)
       if (data.getUserByLogin.error) {
         // dispatch(setMessage(data.getUserByLogin.message))
         if (data.getUserByLogin.message === 'login not found') {
@@ -114,10 +111,16 @@ const Homepage = () => {
     )
   }, [srt])
 
-  const containers = useMemo(() => [Introduction, Menu, Education, Patent, Job, Article], [Menu])
+  const containers = useMemo(
+    () => [Introduction, Menu, Education, Residency, Patent, Job, Article],
+    [Menu]
+  )
   //next line after product compilation does not work
   // const names = containers.map(elm => elm.name.toLowerCase())
-  const names = useMemo(() => ['introduction', 'menu', 'education', 'patent', 'job', 'article'], [])
+  const names = useMemo(
+    () => ['introduction', 'menu', 'education', 'residency', 'patent', 'job', 'article'],
+    []
+  )
 
   const [elms, setElms] =
     useState<
