@@ -1,75 +1,20 @@
 import { LanguageContext } from '../contexts/LanguageContext'
-import { MenuContext } from '../contexts/MenuContext'
-
+import { PatentRow } from './Homepage'
 import { Typography } from 'antd'
-import { gql, useQuery } from '@apollo/client'
-import { setMessage } from '../components/Message/messageActionCreators'
-import { useDispatch } from 'react-redux'
-import React, { useContext, useEffect, useState } from 'react'
-
-type PatentRow = {
-  number: string
-  title: string
-  link: string
-}
+import React, { useContext } from 'react'
 
 type Props = {
-  name?: string
+  data?: PatentRow[]
 }
 
-const query = {
-  getPatents: gql`
-    query Patents($login: String, $language: String, $orderBy: String) {
-      allPatents(login: $login, language: $language, orderBy: $orderBy) {
-        error
-        data {
-          number
-          title
-          link
-        }
-        message
-      }
-    }
-  `,
-}
-
-const Patent = ({ name }: Props) => {
-  const dispatch = useDispatch()
-  const { addItem, removeItem } = useContext(MenuContext)
-  const { getExpression, getLanguage } = useContext(LanguageContext)
-  const [data, setdata] = useState<Array<PatentRow>>([])
+const Patent = ({ data }: Props) => {
+  const { getExpression } = useContext(LanguageContext)
   const { Paragraph, Title } = Typography
-  const menuItem = { link: 'patent', name: 'header.patents' }
-
-  const { refetch: refetchPatentsData } = useQuery(query.getPatents, {
-    skip: true,
-    onCompleted: allPatentsData => {
-      if (allPatentsData.allPatents.error) {
-        removeItem(menuItem)
-        dispatch(setMessage(allPatentsData.allPatents.message))
-        return
-      }
-      const datas: Array<PatentRow> = []
-      Object.keys(allPatentsData.allPatents.data).forEach((key, index) =>
-        datas.push({
-          ...allPatentsData.allPatents.data[key],
-          ...{ action: '', key: index },
-        })
-      )
-      if (datas.length === 0) removeItem(menuItem)
-      else addItem(menuItem)
-      setdata(datas)
-    },
-  })
-
-  useEffect(() => {
-    refetchPatentsData({ login: name, language: getLanguage(), orderBy: 'id' })
-  }, [refetchPatentsData, getLanguage, name])
 
   return (
     <>
       {data.length > 0 && (
-        <Title level={4} className='section' id={menuItem.link}>
+        <Title level={4} className='section' id='patent'>
           {getExpression('header.patents')}
         </Title>
       )}

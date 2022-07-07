@@ -1,31 +1,18 @@
 import { LanguageContext } from '../contexts/LanguageContext'
 import { Link } from 'react-router-dom'
-import { MenuContext } from '../contexts/MenuContext'
 import { Typography } from 'antd'
 import { gql, useQuery } from '@apollo/client'
-import { menuItem } from '../contexts/MenuProvider'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Article from './Article'
 import Education from './Education'
-import Introduction from './Introduction'
 import Job from './Job'
 import Patent from './Patent'
-import React, {
-  FunctionComponentElement,
-  JSXElementConstructor,
-  ReactElement,
-  createElement,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import Residency from './Residency'
 
 const query = {
-  getUsersLogins: gql`
+  getLogins: gql`
     query getUsersLogins {
       getUsersLogins {
         login
@@ -33,8 +20,8 @@ const query = {
       }
     }
   `,
-  getUser: gql`
-    query getUserByLogin($login: String) {
+  getData: gql`
+    query getData($login: String, $language: String, $orderBy: String) {
       getUserByLogin(login: $login) {
         error
         data {
@@ -42,122 +29,219 @@ const query = {
         }
         message
       }
+      allEducationRangesByLogin(login: $login, language: $language, orderBy: $orderBy) {
+        error
+        data {
+          title
+          description
+          degree
+          started
+          finished
+        }
+        message
+      }
+      allArticlesByLogin(login: $login, language: $language, orderBy: $orderBy) {
+        error
+        data {
+          id
+          title
+          content
+          links
+        }
+        message
+      }
+      getIntroductionByLogin(login: $login, language: $language) {
+        error
+        data {
+          content
+        }
+        message
+      }
+      allJobRangesByLogin(login: $login, language: $language, orderBy: $orderBy) {
+        error
+        data {
+          id
+          title
+          description
+          position
+          skills
+          platform
+          started
+          finished
+        }
+        message
+      }
+      allPatentsByLogin(login: $login, language: $language, orderBy: $orderBy) {
+        error
+        data {
+          number
+          title
+          link
+        }
+        message
+      }
+      allResidencyRangesByLogin(login: $login, language: $language, orderBy: $orderBy) {
+        error
+        data {
+          title
+          description
+          started
+          finished
+        }
+        message
+      }
     }
   `,
 }
+
+export type EducationRow = {
+  title: string
+  description: string
+  degree: string
+  started: string
+  finished: string
+}
+
+export type ResidencyRow = {
+  title: string
+  description: string
+  started: string
+  finished: string
+}
+
+export type PatentRow = {
+  number: string
+  title: string
+  link: string
+}
+
+export type JobRow = {
+  id: number
+  title: string
+  description: string
+  position: string
+  skills: string
+  platform: string
+  started: string
+  finished: string
+}
+
+export type menuItem = { name: string; link: string }
+
+export type ArticleRow = { id: number; title: string; content: string; links: string }
 
 type NameLogin = {
   name: string
   login: string
 }
 
-type Props = {
-  name?: string
+type TCV = {
+  user: string | null
+  introduction: string | null
+  menu: menuItem[] | null
+  education: EducationRow[] | null
+  residency: ResidencyRow[] | null
+  patent: PatentRow[] | null
+  job: JobRow[] | null
+  article: ArticleRow[] | null
 }
 
 const Homepage = () => {
   const navigate = useNavigate()
   const { Title } = Typography
+  const { getExpression, getLanguage } = useContext(LanguageContext)
+
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const name = useLocation().pathname.substring(1)
-  const [login, setLogin] = useState<string>()
+  const initCV: TCV = {
+    user: null,
+    introduction: null,
+    menu: null,
+    education: null,
+    residency: null,
+    patent: null,
+    job: null,
+    article: null,
+  }
+
+  const menuItems = [
+    { link: 'education', name: 'header.education' },
+    { link: 'residency', name: 'header.residency' },
+    { link: 'patent', name: 'header.patents' },
+    { link: 'job', name: 'header.professional.experience' },
+    { link: 'article', name: 'header.projects' },
+  ]
+
+  const [cv, setCv] = useState<TCV>(initCV)
+
   const [logins, setLogins] = useState<Array<NameLogin>>()
-  const [user, setUser] = useState<string>()
-  const { refetch } = useQuery(query.getUsersLogins, {
+
+  const { refetch } = useQuery(query.getLogins, {
     skip: true,
     onCompleted: data => {
       setLogins(data.getUsersLogins)
     },
   })
-  const { getExpression } = useContext(LanguageContext)
-  const srt = useCallback(
-    (a: menuItem, b: menuItem): number => {
-      return names.indexOf(a.link) - names.indexOf(b.link)
-    },
-    // eslint-disable-next-line
-    []
-  )
 
-  const { refetch: refetchUserData } = useQuery(query.getUser, {
-    variables: { login: name },
+  const { refetch: refetchUserData } = useQuery(query.getData, {
+    variables: { login: name, language: getLanguage(), orderBy: 'id' },
     onCompleted: data => {
-      if (data.getUserByLogin.error) {
-        // dispatch(setMessage(data.getUserByLogin.message))
-        if (data.getUserByLogin.message === 'login not found') {
-          setLogin(undefined)
-          navigate('/')
-        }
-        return
-      }
-      setUser(data.getUserByLogin.data.name)
-      setLogin(name)
+      const tmp: TCV = initCV
+      if (data.getUserByLogin.message === 'login not found') {
+        navigate('/')
+      } else tmp.user = data.getUserByLogin.data.name
+      if (!data.getIntroductionByLogin.error)
+        tmp.introduction = data.getIntroductionByLogin.data.content
+      if (!data.allEducationRangesByLogin.error) tmp.education = data.allEducationRangesByLogin.data
+      if (!data.allResidencyRangesByLogin.error) tmp.residency = data.allResidencyRangesByLogin.data
+      if (!data.allPatentsByLogin.error) tmp.patent = data.allPatentsByLogin.data
+      if (!data.allJobRangesByLogin.error) tmp.job = data.allJobRangesByLogin.data
+      if (!data.allArticlesByLogin.error) tmp.article = data.allArticlesByLogin.data
+      tmp.menu = []
+      menuItems.forEach(item => {
+        if ((tmp[item.link as keyof typeof tmp]?.length || 0) > 0) tmp.menu.push(item)
+      })
+      if (tmp.menu.length < 2) tmp.menu = null
+      setCv(tmp)
     },
   })
-
-  const Menu = useCallback(() => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { menu } = useContext(MenuContext)
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { getExpression } = useContext(LanguageContext)
-    if (menu.length < 2) return null
-    return (
-      <div className='menu'>
-        {menu?.sort(srt).map((elm, index) => (
-          <a href={'#' + elm.link} key={index}>
-            {getExpression(elm.name)}
-          </a>
-        ))}
-      </div>
-    )
-  }, [srt])
-
-  const containers = useMemo(
-    () => [Introduction, Menu, Education, Residency, Patent, Job, Article],
-    [Menu]
-  )
-  //next line after product compilation does not work
-  // const names = containers.map(elm => elm.name.toLowerCase())
-  const names = useMemo(
-    () => ['introduction', 'menu', 'education', 'residency', 'patent', 'job', 'article'],
-    []
-  )
-
-  const [elms, setElms] =
-    useState<
-      Array<
-        | FunctionComponentElement<Props>[]
-        | ReactElement<{ name: string }, string | JSXElementConstructor<any>>
-      >
-    >()
 
   useEffect(() => {
     // setLogin(name)
     if (!name) refetch()
     else refetchUserData()
-  }, [login, name, refetch, refetchUserData])
-
-  useEffect(() => {
-    const prepareElms = () => {
-      const elems = containers.map((elm, index) => createElement(elm, { name: login, key: index }))
-      setElms(elems)
-    }
-    if (!elms && login && user) {
-      prepareElms()
-    }
-  }, [login, elms, containers, user])
+  }, [name, refetch, refetchUserData])
 
   return (
     <>
-      {login && elms?.map(elm => elm)}
-      {!login && (
+      {!name && (
         <>
-          {(login && user && <Title level={2}>{user}</Title>) || null}
           <ReactMarkdown>{getExpression('Invitation')}</ReactMarkdown>
           {logins?.map((user, index) => (
             <Link to={user.login} key={index}>
               {user.name}
             </Link>
           ))}
+        </>
+      )}
+      {name && (
+        <>
+          {cv.user && <Title level={2}>{cv.user}</Title>}
+          {cv.introduction && <ReactMarkdown>{cv.introduction}</ReactMarkdown>}
+          {cv && (
+            <div className='menu'>
+              {cv?.menu?.map((elm, index) => (
+                <a href={'#' + elm.link} key={index}>
+                  {getExpression(elm.name)}
+                </a>
+              ))}
+            </div>
+          )}
+          {cv.education && <Education data={cv.education} />}
+          {cv.residency && <Residency data={cv.residency} />}
+          {cv.patent && <Patent data={cv.patent} />}
+          {cv.job && <Job data={cv.job} />}
+          {cv.article && <Article data={cv.article} />}
         </>
       )}
     </>
