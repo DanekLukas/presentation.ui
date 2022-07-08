@@ -29,6 +29,16 @@ const query = {
         }
         message
       }
+      allArticlesByLogin(login: $login, language: $language, orderBy: $orderBy) {
+        error
+        data {
+          id
+          title
+          content
+          links
+        }
+        message
+      }
       allEducationRangesByLogin(login: $login, language: $language, orderBy: $orderBy) {
         error
         data {
@@ -37,16 +47,6 @@ const query = {
           degree
           started
           finished
-        }
-        message
-      }
-      allArticlesByLogin(login: $login, language: $language, orderBy: $orderBy) {
-        error
-        data {
-          id
-          title
-          content
-          links
         }
         message
       }
@@ -148,7 +148,7 @@ type TCV = {
 
 const Homepage = () => {
   const navigate = useNavigate()
-  const { Title } = Typography
+  const { Title, Link: Lnk } = Typography
   const { getExpression, getLanguage } = useContext(LanguageContext)
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -157,19 +157,19 @@ const Homepage = () => {
     user: null,
     introduction: null,
     menu: null,
+    article: null,
     education: null,
     residency: null,
     patent: null,
     job: null,
-    article: null,
   }
 
   const menuItems = [
+    { link: 'article', name: 'header.projects' },
     { link: 'education', name: 'header.education' },
     { link: 'residency', name: 'header.residency' },
     { link: 'patent', name: 'header.patents' },
     { link: 'job', name: 'header.professional.experience' },
-    { link: 'article', name: 'header.projects' },
   ]
 
   const [cv, setCv] = useState<TCV>(initCV)
@@ -192,11 +192,11 @@ const Homepage = () => {
       } else tmp.user = data.getUserByLogin.data.name
       if (!data.getIntroductionByLogin.error)
         tmp.introduction = data.getIntroductionByLogin.data.content
+      if (!data.allArticlesByLogin.error) tmp.article = data.allArticlesByLogin.data
       if (!data.allEducationRangesByLogin.error) tmp.education = data.allEducationRangesByLogin.data
       if (!data.allResidencyRangesByLogin.error) tmp.residency = data.allResidencyRangesByLogin.data
       if (!data.allPatentsByLogin.error) tmp.patent = data.allPatentsByLogin.data
       if (!data.allJobRangesByLogin.error) tmp.job = data.allJobRangesByLogin.data
-      if (!data.allArticlesByLogin.error) tmp.article = data.allArticlesByLogin.data
       tmp.menu = []
       menuItems.forEach(item => {
         if ((tmp[item.link as keyof typeof tmp]?.length || 0) > 0) tmp.menu.push(item)
@@ -230,18 +230,18 @@ const Homepage = () => {
           {cv.introduction && <ReactMarkdown>{cv.introduction}</ReactMarkdown>}
           {cv && (
             <div className='menu'>
-              {cv?.menu?.map((elm, index) => (
-                <a href={'#' + elm.link} key={index}>
+              {cv.menu?.map((elm, index) => (
+                <Lnk href={'#' + elm.link} key={index}>
                   {getExpression(elm.name)}
-                </a>
+                </Lnk>
               ))}
             </div>
           )}
+          {cv.article && <Article data={cv.article} />}
           {cv.education && <Education data={cv.education} />}
           {cv.residency && <Residency data={cv.residency} />}
           {cv.patent && <Patent data={cv.patent} />}
           {cv.job && <Job data={cv.job} />}
-          {cv.article && <Article data={cv.article} />}
         </>
       )}
     </>

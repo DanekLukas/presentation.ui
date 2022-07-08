@@ -9,7 +9,7 @@ type Props = {
 
 const Patent = ({ data }: Props) => {
   const { getExpression } = useContext(LanguageContext)
-  const { Paragraph, Title } = Typography
+  const { Paragraph, Title, Link } = Typography
 
   return (
     <>
@@ -22,9 +22,9 @@ const Patent = ({ data }: Props) => {
         <Paragraph key={index}>
           {((elm, link) =>
             link ? (
-              <a href={link} target='_blank' rel='noreferrer'>
+              <Link href={link} target='_blank' rel='noreferrer'>
                 {elm}
-              </a>
+              </Link>
             ) : (
               { elm }
             ))(

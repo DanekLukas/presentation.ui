@@ -21,9 +21,15 @@ const Article = ({ data }: Props) => {
       )}
       {data.map((item, index) => (
         <Paragraph key={index}>
-          <Title level={4}>{item.title}</Title>
+          <Title level={4}>
+            {(item.links && (
+              <Link href={item.links} target='_blank'>
+                {item.title}
+              </Link>
+            )) ||
+              item.title}
+          </Title>
           <ReactMarkdown>{item.content}</ReactMarkdown>
-          <Link>{item.links}</Link>
         </Paragraph>
       ))}
     </>

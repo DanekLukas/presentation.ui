@@ -4,7 +4,6 @@ import { Typography } from 'antd'
 import Language from './Language'
 import Message from '../components/Message'
 import React, { useContext } from 'react'
-import styled from '@emotion/styled'
 
 const { Title } = Typography
 
@@ -17,16 +16,11 @@ const Header = () => {
         <Link to={''}>{getExpression('pageTitle')}</Link>
       </Title>
       <Message />
-      <LanguageWrapper>
+      <div className='language-menu'>
         <Language />
-      </LanguageWrapper>
+      </div>
     </>
   )
 }
-
-const LanguageWrapper = styled.div`
-  display: inline-block;
-  float: right;
-`
 
 export default Header
