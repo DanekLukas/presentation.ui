@@ -21,12 +21,12 @@ const Education = ({ data }: Props) => {
       )}
       {data.map((item, index) => (
         <Paragraph key={index}>
-          <Title level={5}>
-            <span style={{ display: 'block', float: 'left' }}>
+          <Title level={5} className='cv-property'>
+            <div>
               {item.started} - {item.finished}
-            </span>
-            <span style={{ paddingLeft: '8rem' }}>{item.title}</span>
-            <span style={{ display: 'block', float: 'right' }}>{item.degree}</span>
+            </div>
+            <span>{item.title}</span>
+            <span>{item.degree}</span>
           </Title>
           <ReactMarkdown>{item.description}</ReactMarkdown>
         </Paragraph>

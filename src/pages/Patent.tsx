@@ -9,7 +9,7 @@ type Props = {
 
 const Patent = ({ data }: Props) => {
   const { getExpression } = useContext(LanguageContext)
-  const { Paragraph, Title, Link } = Typography
+  const { Title, Link } = Typography
 
   return (
     <>
@@ -19,22 +19,16 @@ const Patent = ({ data }: Props) => {
         </Title>
       )}
       {data.map((item, index) => (
-        <Paragraph key={index}>
-          {((elm, link) =>
-            link ? (
-              <Link href={link} target='_blank' rel='noreferrer'>
-                {elm}
-              </Link>
-            ) : (
-              { elm }
-            ))(
-            <span style={{ display: 'block', float: 'left', fontWeight: 'bold' }}>
+        <Title level={5} className='cv-property' key={index}>
+          {item.link ? (
+            <Link href={item.link} target='_blank' rel='noreferrer'>
               {item.number}
-            </span>,
-            item.link
+            </Link>
+          ) : (
+            <div>{item.number}</div>
           )}
-          <span style={{ paddingLeft: '8rem', fontWeight: 'bold' }}>{item.title}</span>
-        </Paragraph>
+          <span>{item.title}</span>
+        </Title>
       ))}
     </>
   )

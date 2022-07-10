@@ -21,13 +21,11 @@ const Job = ({ data }: Props) => {
       )}
       {data.map((item, index) => (
         <Paragraph key={index} className='job'>
-          <Title level={5}>
-            <span style={{ display: 'block', float: 'left' }}>
+          <Title level={5} className='cv-property'>
+            <span>
               {item.started} {item.started !== item.finished && `- ${item.finished}`}
             </span>
-            <span style={{ paddingLeft: item.started === item.finished ? '10rem' : '8rem' }}>
-              {item.title}
-            </span>
+            <span>{item.title}</span>
           </Title>
           <ReactMarkdown>
             {`>${item['description' as keyof typeof item]}  

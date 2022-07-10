@@ -21,11 +21,11 @@ const Residency = ({ data }: Props) => {
       )}
       {data.map((item, index) => (
         <Paragraph key={index}>
-          <Title level={5}>
-            <span style={{ display: 'block', float: 'left' }}>
+          <Title level={5} className='cv-property'>
+            <span>
               {item.started} - {item.finished}
             </span>
-            <span style={{ paddingLeft: '8rem' }}>{item.title}</span>
+            <span>{item.title}</span>
           </Title>
           <ReactMarkdown>{item.description}</ReactMarkdown>
         </Paragraph>

@@ -74,10 +74,36 @@ div#root > div {
 h1 {
   font-weight: 100!important;
 }
+h1.ant-typography > a {
+  font-weight: 100!important;
+}
 
 div.language-menu {
   display: block;
   float: right;
+}
+
+h5.cv-property {
+  width: 100%;
+
+  :first-child {
+    display: inline-block;
+    min-width: 9rem;
+    margin-right: 0.5rem;
+  }
+
+  :nth-child(2) {
+    font-weight: bold;
+  }
+
+  :nth-child(3) {
+    float: right;
+    margin-right: 0.2rem;
+  }
+}
+
+div.ant-typography > p, div.ant-typography > blockquote > p {
+  text-align: justify;
 }
 
 @media print {
@@ -91,21 +117,30 @@ div.language-menu {
 
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1024px) {
   div#root {
-    width: 100%;
     font-size: 1.6rem;
+    padding: 0 2rem;
+  }
+  div#root > div {
+    width: 100%;
   }
   h1.ant-typography {
     font-size: 1.8em;
   }
-  h4.ant-typography {
+  h3.ant-typography {
     font-size: 1.3em;
   }
-  h5.ant-typography {
+  h4.ant-typography {
     font-size: 1.2em;
   }
   .ant-dropdown-menu-title-content {
     font-size: 1.6em;
+  }
+  h1.ant-typography {
+    font-weight: 400;
+  }
+  h1.ant-typography > a {
+    font-weight: inherit;
   }
 }
