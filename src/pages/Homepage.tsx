@@ -177,7 +177,6 @@ const Homepage = () => {
   const [logins, setLogins] = useState<Array<NameLogin>>()
 
   const { loading, refetch } = useQuery(query.getLogins, {
-    skip: true,
     onCompleted: data => {
       setLogins(data.getUsersLogins)
     },
