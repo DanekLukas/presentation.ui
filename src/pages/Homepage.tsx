@@ -176,14 +176,15 @@ const Homepage = () => {
 
   const [logins, setLogins] = useState<Array<NameLogin>>()
 
-  const { refetch } = useQuery(query.getLogins, {
+  const { loading, refetch } = useQuery(query.getLogins, {
     skip: true,
     onCompleted: data => {
       setLogins(data.getUsersLogins)
     },
+    onError: data => {},
   })
 
-  const { refetch: refetchUserData } = useQuery(query.getData, {
+  const { loading: loadingUserData, refetch: refetchUserData } = useQuery(query.getData, {
     variables: { login: name, language: getLanguage(), orderBy: 'id' },
     onCompleted: data => {
       const tmp: TCV = initCV
@@ -204,6 +205,7 @@ const Homepage = () => {
       if (tmp.menu.length < 2) tmp.menu = null
       setCv(tmp)
     },
+    onError: data => {},
   })
 
   useEffect(() => {
@@ -217,31 +219,41 @@ const Homepage = () => {
       {!name && (
         <>
           <ReactMarkdown>{getExpression('Invitation')}</ReactMarkdown>
-          {logins?.map((user, index) => (
-            <Link to={user.login} key={index}>
-              {user.name}
-            </Link>
-          ))}
+          {loading ? (
+            <p>{getExpression('loading')}</p>
+          ) : (
+            logins?.map((user, index) => (
+              <Link to={user.login} key={index}>
+                {user.name}
+              </Link>
+            ))
+          )}
         </>
       )}
       {name && (
         <>
-          {cv.user && <Title level={2}>{cv.user}</Title>}
-          {cv.introduction && <ReactMarkdown>{cv.introduction}</ReactMarkdown>}
-          {cv && (
-            <div className='menu'>
-              {cv.menu?.map((elm, index) => (
-                <Lnk href={'#' + elm.link} key={index}>
-                  {getExpression(elm.name)}
-                </Lnk>
-              ))}
-            </div>
+          {loadingUserData ? (
+            <p>{getExpression('loading')}</p>
+          ) : (
+            <>
+              {cv.user && <Title level={2}>{cv.user}</Title>}
+              {cv.introduction && <ReactMarkdown>{cv.introduction}</ReactMarkdown>}
+              {cv && (
+                <div className='menu'>
+                  {cv.menu?.map((elm, index) => (
+                    <Lnk href={'#' + elm.link} key={index}>
+                      {getExpression(elm.name)}
+                    </Lnk>
+                  ))}
+                </div>
+              )}
+              {cv.article && <Article data={cv.article} />}
+              {cv.education && <Education data={cv.education} />}
+              {cv.residency && <Residency data={cv.residency} />}
+              {cv.patent && <Patent data={cv.patent} />}
+              {cv.job && <Job data={cv.job} />}
+            </>
           )}
-          {cv.article && <Article data={cv.article} />}
-          {cv.education && <Education data={cv.education} />}
-          {cv.residency && <Residency data={cv.residency} />}
-          {cv.patent && <Patent data={cv.patent} />}
-          {cv.job && <Job data={cv.job} />}
         </>
       )}
     </>
